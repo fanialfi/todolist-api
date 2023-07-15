@@ -4,9 +4,12 @@ import controllers from "../controllers/todo_controllers.js";
 const routes = express.Router();
 
 routes.use(express.json());
-routes.route("/").post(controllers.add);
-routes.route("/:id").delete(controllers.delete);
+routes.post("/", controllers.add);
 routes.get("/todos", controllers.getAll);
-routes.get("/todos/:id", controllers.get);
+// routes.get("/todos/:id", controllers.get);
 
+routes.route("/todos/:id")
+  .get(controllers.get)
+  .delete(controllers.delete)
+  .put(controllers.update);
 export default routes;

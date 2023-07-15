@@ -3,16 +3,31 @@ import pgConnection from "../model/pg.js";
 const controllers = {
   add: async (req, res) => {
     const { nama, keterangan } = req.body;
-    const query = "INSERT INTO todo (nama, keterangan) VALUES($1, $2)";
-    const result = await pgConnection(query, [nama, keterangan]);
 
-    res
-      .status(200)
-      .set({
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      })
-      .json(result);
+    if (nama && keterangan) {
+      const query = "INSERT INTO todo (nama, keterangan) VALUES($1, $2)";
+      const result = await pgConnection(query, [nama, keterangan]);
+
+      res
+        .status(200)
+        .set({
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        })
+        .json(result);
+    } else {
+      res
+        .status(400)
+        .set({
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        })
+        .json({
+          message:
+            "permintaan gagal terpenuhi karena kesalahan syntax atau request message",
+          time: +new Date(),
+        });
+    }
   },
   getAll: async (req, res) => {
     const query = "SELECT * FROM todo";
@@ -59,6 +74,21 @@ const controllers = {
     const query = "DELETE FROM todo WHERE id = $1";
     const result = await pgConnection(query, [id]);
     res.json(result);
+  },
+  update: async (req, res) => {
+    const id = req.params.id;
+    const { nama, keterangan } = req.body;
+    if (nama && keterangan) {
+      const query =
+        "UPDATE todo SET nama = $1, keterangan = $2, date = $3 WHERE id = $4";
+      const result = await pgConnection(query, [
+        nama,
+        keterangan,
+        +new Date(),
+        id,
+      ]);
+      res.send(result);
+    }
   },
 };
 
